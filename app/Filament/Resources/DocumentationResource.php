@@ -89,7 +89,7 @@ class DocumentationResource extends Resource
         return [
             'index' => Pages\ListDocumentations::route('/'),
             'create' => Pages\CreateDocumentation::route('/create'),
-            'edit' => Pages\EditDocumentation::route('/{record}/edit'),
+            'edit' => Pages\EditDocumentation::route('/{record}/edit')
         ];
     }
 

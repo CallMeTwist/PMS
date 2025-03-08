@@ -11,7 +11,7 @@ class Ward extends Model
 
     public function units()
     {
-        return $this->belongsTo(Unit::class);
+        return $this->belongsToMany(Unit::class, 'unit_ward');
     }
 
     public function patients()
