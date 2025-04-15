@@ -9,6 +9,8 @@ class Ward extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name', 'description'];
+
     public function units()
     {
         return $this->belongsToMany(Unit::class, 'unit_ward');
