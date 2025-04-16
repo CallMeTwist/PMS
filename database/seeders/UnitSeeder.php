@@ -13,15 +13,11 @@ class UnitSeeder extends Seeder
      */
     public function run(): void
     {
-        $units = [
-            ['name' => 'Pediatrics'],
-            ['name' => 'Neurology'],
-            ['name' => 'Orthopaedics'],
-            ['name' => 'Women\'s Health'],
-        ];
-
-        foreach ($units as $unit) {
-            Unit::create($unit);
-        }
+        Unit::insert([
+            ['name' => 'Pediatric Unit'],
+            ['name' => 'Neurology Unit'],
+            ['name' => 'Orthopedic Unit'],
+            ['name' => 'O&G Unit'],
+        ]);
     }
 }

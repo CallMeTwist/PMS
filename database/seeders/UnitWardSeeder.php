@@ -6,6 +6,7 @@ use App\Models\Unit;
 use App\Models\Ward;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class UnitWardSeeder extends Seeder
 {
@@ -14,13 +15,24 @@ class UnitWardSeeder extends Seeder
      */
     public function run(): void
     {
-        $unit1 = Unit::create(['name' => 'Orthopedic']);
-        $unit2 = Unit::create(['name' => 'Neurology']);
+        $unitWardData = [
+            // Pedo for Pedo
+            ['unit_id' => 1, 'ward_id' => 1],
 
-        $ward1 = Ward::create(['name' => 'A&E']);
-        $ward2 = Ward::create(['name' => 'Post-Surgical Ward']);
+            // Ndi Neuro ga na fu ndi Medical Ward, A&E na Surgical Ward
+            ['unit_id' => 2, 'ward_id' => 2],
+            ['unit_id' => 2, 'ward_id' => 5],
+            ['unit_id' => 2, 'ward_id' => 4],
 
-        $unit1->wards()->attach([$ward1->id, $ward2->id]);
-        $unit2->wards()->attach([$ward1->id]);
+            // Ndi Orthopedic ga na fu ndi Surgical Ward, Orthopedic Ward,  na A&E
+            ['unit_id' => 3, 'ward_id' => 4],
+            ['unit_id' => 3, 'ward_id' => 3],
+            ['unit_id' => 3, 'ward_id' => 5],
+
+            // Ndị vagina ga na-ahụ ụfọdụ ndị nọ na Medical Ward
+            ['unit_id' => 4, 'ward_id' => 2],
+        ];
+
+        DB::table('unit_ward')->insert($unitWardData);
     }
 }

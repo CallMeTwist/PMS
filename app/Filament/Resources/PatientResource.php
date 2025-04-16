@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PatientResource\Pages;
 use App\Filament\Resources\PatientResource\RelationManagers;
 use App\Models\Patient;
+use App\Models\Unit;
 use App\Models\Ward;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -67,12 +68,19 @@ class PatientResource extends Resource
                 Forms\Components\DatePicker::make('date_of_birth')
                     ->required(),
                 Forms\Components\Select::make('ward_id')
-                    ->relationship('wards', 'name')
+                    ->relationship('ward', 'name')
                     ->nullable()
                     ->reactive()
                     ->label('Ward'),
                 Forms\Components\Select::make('unit_id')
-                    ->options(fn(Get $get): Collection => Ward::find($get('ward_id'))?->units()->pluck('name', 'id') ?? collect())
+                    ->options(fn(Get $get): Collection =>
+                        Ward::find($get('ward_id'))
+                            ?->units()
+                            ->select('units.id', 'units.name') // To avoid ambiguity
+                            ->pluck('units.name', 'units.id')
+                        ?? collect()
+                    )
+                    ->label('Unit to See Patient')
                     ->native(false)
                     ->searchable()
                     ->preload()

@@ -9,12 +9,14 @@ class Patient extends Model
 {
     use HasFactory;
 
-    public function units()
+    protected $guarded = [];
+
+    public function unit()
     {
         return $this->belongsTo(Unit::class);
     }
 
-    public function wards()
+    public function ward()
     {
         return $this->belongsTo(Ward::class);
     }
