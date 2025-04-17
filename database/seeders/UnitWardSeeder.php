@@ -15,22 +15,21 @@ class UnitWardSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::table('unit_ward')->truncate();
+
         $unitWardData = [
-            // Pedo for Pedo
-            ['unit_id' => 1, 'ward_id' => 1],
+            ['unit_id' => 1, 'ward_id' => 1], // Pediatric Unit -> Pediatric Ward
 
-            // Ndi Neuro ga na fu ndi Medical Ward, A&E na Surgical Ward
-            ['unit_id' => 2, 'ward_id' => 2],
-            ['unit_id' => 2, 'ward_id' => 5],
-            ['unit_id' => 2, 'ward_id' => 4],
+            ['unit_id' => 2, 'ward_id' => 2], // Neurology -> Medical
+            ['unit_id' => 2, 'ward_id' => 4], // Neurology -> Surgical
+            ['unit_id' => 2, 'ward_id' => 5], // Neurology -> A&E
 
-            // Ndi Orthopedic ga na fu ndi Surgical Ward, Orthopedic Ward,  na A&E
-            ['unit_id' => 3, 'ward_id' => 4],
-            ['unit_id' => 3, 'ward_id' => 3],
-            ['unit_id' => 3, 'ward_id' => 5],
+            ['unit_id' => 3, 'ward_id' => 3], // Ortho -> Ortho Ward
+            ['unit_id' => 3, 'ward_id' => 4], // Ortho -> Surgical
+            ['unit_id' => 3, 'ward_id' => 5], // Ortho -> A&E
+            ['unit_id' => 3, 'ward_id' => 6], // Ortho -> A&E
 
-            // Ndị vagina ga na-ahụ ụfọdụ ndị nọ na Medical Ward
-            ['unit_id' => 4, 'ward_id' => 2],
+            ['unit_id' => 4, 'ward_id' => 2], // O&G -> Medical (depending)
         ];
 
         DB::table('unit_ward')->insert($unitWardData);

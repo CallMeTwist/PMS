@@ -67,28 +67,38 @@ class PatientResource extends Resource
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('date_of_birth')
                     ->required(),
+                Forms\Components\Toggle::make('is_in_patient')
+                    ->default(true)
+                    ->label('Is In-Patient')
+                    ->reactive(),
                 Forms\Components\Select::make('ward_id')
                     ->relationship('ward', 'name')
                     ->nullable()
                     ->reactive()
-                    ->label('Ward'),
+                    ->label('Ward')
+                    ->visible(fn (Get $get) => $get('is_in_patient')),
                 Forms\Components\Select::make('unit_id')
-                    ->options(fn(Get $get): Collection =>
-                        Ward::find($get('ward_id'))
-                            ?->units()
-                            ->select('units.id', 'units.name') // To avoid ambiguity
-                            ->pluck('units.name', 'units.id')
-                        ?? collect()
-                    )
-                    ->label('Unit to See Patient')
+                    ->options(function (Get $get): Collection {
+                        $isInPatient = $get('is_in_patient');
+                        $wardId = $get('ward_id');
+
+                        if ($isInPatient) {
+                            return Ward::find($wardId)?->units()
+                                    ->select('units.id', 'units.name')
+                                    ->pluck('units.name', 'units.id') ?? collect();
+                        }
+
+                        // If outpatient, show all units
+                        return Unit::query()
+                            ->select('id', 'name')
+                            ->pluck('name', 'id');
+                    })
                     ->native(false)
                     ->searchable()
                     ->preload()
                     ->live()
                     ->required(),
-                Forms\Components\Toggle::make('is_in_patient')
-                    ->default(true)
-                    ->label('Is In-Patient'),
+
                 Forms\Components\DatePicker::make('discharge_date')
                     ->label('Discharge Date')
                     ->visible(fn ($get) => !$get('is_in_patient')),

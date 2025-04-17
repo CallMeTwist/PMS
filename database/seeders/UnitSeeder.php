@@ -14,10 +14,10 @@ class UnitSeeder extends Seeder
     public function run(): void
     {
         Unit::insert([
-            ['name' => 'Pediatric Unit'],
-            ['name' => 'Neurology Unit'],
-            ['name' => 'Orthopedic Unit'],
-            ['name' => 'O&G Unit'],
+            ['name' => 'Pediatric Unit', 'description' => 'Handles pediatric cases'],
+            ['name' => 'Neurology Unit', 'description' => 'Handles neurological cases'],
+            ['name' => 'Orthopedic Unit', 'description' => 'Handles orthopedic cases'],
+            ['name' => 'O&G Unit', 'description' => 'Handles obstetrics and gynecology cases'],
         ]);
     }
 }
