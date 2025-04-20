@@ -46,6 +46,9 @@ class WardResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('inpatients_count')
+                    ->label('Inpatients')
+                    ->getStateUsing(fn ($record) => $record->patients()->where('is_in_patient', true)->count())
             ])
             ->filters([
                 //

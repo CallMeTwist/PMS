@@ -46,6 +46,13 @@ class UnitResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('patients_count')
+                    ->label('Patients')
+                    ->counts('patients')
+                    ->sortable()
+                    ->url(fn ($record) => route('filament.admin.resources.patients.index', [
+                        'tableFilters[unit_id][value]' => $record->id,
+                    ])),
             ])
             ->filters([
                 //

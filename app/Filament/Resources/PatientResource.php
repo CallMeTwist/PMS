@@ -35,7 +35,10 @@ class PatientResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('phone_number')
                     ->tel()
-                    ->maxLength(255),
+                    ->rules(['required', 'regex:/^[\d\+\-\s\(\)]+$/', 'max:20'])
+                    ->maxLength(20)
+                    ->placeholder('+1 (929) 267-5514')
+                    ->label('Phone Number'),
                 Forms\Components\Textarea::make('address')
                     ->maxLength(65535),
                 Forms\Components\TextInput::make('age')
@@ -70,34 +73,40 @@ class PatientResource extends Resource
                 Forms\Components\Toggle::make('is_in_patient')
                     ->default(true)
                     ->label('Is In-Patient')
-                    ->reactive(),
-                Forms\Components\Select::make('ward_id')
-                    ->relationship('ward', 'name')
-                    ->nullable()
                     ->reactive()
+                    ->afterStateUpdated(function (callable $set) {
+                        $set('ward_id', null);
+                        $set('unit_id', null);
+                    }),
+                Forms\Components\Select::make('ward_id')
                     ->label('Ward')
-                    ->visible(fn (Get $get) => $get('is_in_patient')),
-                Forms\Components\Select::make('unit_id')
-                    ->options(function (Get $get): Collection {
-                        $isInPatient = $get('is_in_patient');
-                        $wardId = $get('ward_id');
+                    ->relationship('ward', 'name')
+                    ->reactive()
+                    ->nullable()
+                    ->visible(fn (Get $get) => $get('is_in_patient'))
+                    ->required(fn (Get $get) => $get('is_in_patient')),
 
-                        if ($isInPatient) {
-                            return Ward::find($wardId)?->units()
-                                    ->select('units.id', 'units.name')
-                                    ->pluck('units.name', 'units.id') ?? collect();
+                Forms\Components\Select::make('unit_id')
+                    ->label('Unit')
+                    ->options(function (Get $get): Collection {
+                        // OUTPATIENT: show all units
+                        if (!$get('is_in_patient')) {
+                            return Unit::all()->pluck('name', 'id');
                         }
 
-                        // If outpatient, show all units
-                        return Unit::query()
-                            ->select('id', 'name')
-                            ->pluck('name', 'id');
+                        // INPATIENT: load units related to the selected ward
+                        return Ward::find($get('ward_id'))
+                                ?->units()
+                                ->select('units.id', 'units.name')
+                                ->pluck('units.name', 'units.id') ?? collect();
                     })
+                    ->default(fn (Get $get) => !$get('is_in_patient') ? 1 : null) // Optional: default unit for outpatients
                     ->native(false)
                     ->searchable()
                     ->preload()
                     ->live()
-                    ->required(),
+                    ->required(fn (Get $get) => $get('is_in_patient')),
+
 
                 Forms\Components\DatePicker::make('discharge_date')
                     ->label('Discharge Date')
