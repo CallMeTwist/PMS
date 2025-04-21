@@ -14,22 +14,11 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $chief = Role::create(['name' => 'chief']);
-        $physio = Role::create(['name' => 'physio']);
-        $intern = Role::create(['name' => 'intern']);
-
-        $permissions = [
-            'create documentation',
-            'view documentation',
-            'edit documentation',
-        ];
-
-        foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
+        {
+            Role::firstOrCreate(['name' => 'admin']);
+            Role::firstOrCreate(['name' => 'chief_physio']);
+            Role::firstOrCreate(['name' => 'physio']);
+            Role::firstOrCreate(['name' => 'intern']);
         }
-
-        $chief->givePermissionTo(['create documentation', 'view documentation', 'edit documentation']);
-        $physio->givePermissionTo(['create documentation', 'view documentation', 'edit documentation']);
-        $intern->givePermissionTo(['create documentation', 'view documentation']);
     }
 }
