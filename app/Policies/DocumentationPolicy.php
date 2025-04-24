@@ -13,7 +13,7 @@ class DocumentationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('view documentations');
+        return $user->hasAnyRole(['admin', 'chief', 'physio', 'intern']);
     }
 
     /**
@@ -21,7 +21,7 @@ class DocumentationPolicy
      */
     public function view(User $user, Documentation $documentation): bool
     {
-        return $user->hasPermissionTo('view documentation');
+        return $user->hasAnyRole(['admin', 'chief', 'physio', 'intern']);
     }
 
     /**

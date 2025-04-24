@@ -9,17 +9,17 @@ class Documentation extends Model
 {
     use HasFactory;
 
-    public function patients()
+    public function patient()
     {
         return $this->belongsTo(Patient::class);
     }
 
-    public function units()
+    public function unit()
     {
         return $this->belongsTo(Unit::class);
     }
 
-    public function users()
+    public function user()
     {
         return $this->belongsTo(User::class);
     }

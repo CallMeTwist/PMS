@@ -50,7 +50,32 @@ class DocumentationResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('patient_id')
+                    ->label('Patient')
+                    ->relationship('patient', 'name')
+                    ->searchable()
+                    ->required(),
+
+                Forms\Components\Select::make('unit_id')
+                    ->label('Unit')
+                    ->relationship('unit', 'name')
+                    ->searchable()
+                    ->required(),
+
+                Forms\Components\Select::make('type')
+                    ->label('Documentation Type')
+                    ->options([
+                        'assessment' => 'Assessment',
+                        'documentation' => 'Documentation',
+                        'review' => 'Review',
+                    ])
+                    ->default('documentation')
+                    ->required(),
+
+                Forms\Components\Textarea::make('notes')
+                    ->label('Notes')
+                    ->rows(10)
+                    ->required(),
             ]);
     }
 
@@ -58,8 +83,21 @@ class DocumentationResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('patient.name')
+                    ->label('Patient'),
+                Tables\Columns\TextColumn::make('unit.name')
+                    ->label('Unit'),
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Type'),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Documented By'),
+                Tables\Columns\TextColumn::make('user_role')
+                    ->label('Role'),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime('d M Y H:i')
+                    ->label('Date'),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])
