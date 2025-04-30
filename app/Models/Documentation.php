@@ -9,6 +9,15 @@ class Documentation extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'patient_id',
+        'unit_id',
+        'user_id',
+        'user_role',
+        'type',
+        'notes',
+    ];
+
     public function patient()
     {
         return $this->belongsTo(Patient::class);

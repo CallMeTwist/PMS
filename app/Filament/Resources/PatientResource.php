@@ -3,12 +3,17 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PatientResource\Pages;
+use App\Filament\Resources\PatientResource\RelationManagers\DocumentationsRelationManager;
 use App\Models\Patient;
 use App\Models\Unit;
 use App\Models\Ward;
 use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Resources\Pages\EditRecord;
+use Filament\Resources\Pages\Page;
+use Filament\Resources\Pages\ViewRecord;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -28,6 +33,11 @@ class PatientResource extends Resource
         Forms\Components\Section::make('Personal Information')->schema([
             Forms\Components\TextInput::make('first_name')->required(),
             Forms\Components\TextInput::make('last_name')->required(),
+            TextInput::make('patient_number')
+                ->label('Patient Number')
+                ->disabled()
+                ->dehydrated(false)
+                ->hidden(),
             Forms\Components\TextInput::make('phone_number')
                 ->tel()
                 ->rules(['required', 'regex:/^[\d\+\-\s\(\)]+$/', 'max:20'])
@@ -72,21 +82,21 @@ class PatientResource extends Resource
                         ->visible(fn (Get $get) => $get('is_in_patient'))
                         ->required(fn (Get $get) => $get('is_in_patient')),
 
-                    Forms\Components\Select::make('unit_id')
-                        ->label('Unit')
-                        ->options(fn (Get $get): Collection =>
-                        $get('is_in_patient')
-                        ? Ward::find($get('ward_id'))?->units()->pluck('units.name', 'units.id') ?? collect()
-                                : Unit::all()->pluck('units.name', 'units.id')
-                        )
-                        ->default(fn (Get $get) => !$get('is_in_patient') ? 1 : null)
-                        ->native(false)
-        ->searchable()
-        ->preload()
-        ->live()
-        ->required(),
+            Forms\Components\Select::make('unit_id')
+                ->label('Unit')
+                ->options(fn (Get $get): Collection =>
+                $get('is_in_patient')
+                    ? Ward::find($get('ward_id'))?->units()->pluck('units.name', 'units.id') ?? collect() // Specify 'units.id'
+                    : Unit::all()->pluck('name', 'id') // Default for outpatient
+                )
+                ->default(fn (Get $get) => !$get('is_in_patient') ? 1 : null)
+                ->native(false)
+                ->searchable()
+                ->preload()
+                ->live()
+                ->required(),
 
-                    Forms\Components\DatePicker::make('discharge_date')
+            Forms\Components\DatePicker::make('discharge_date')
                         ->visible(fn (Get $get) => !$get('is_in_patient')),
                 ]),
             ]);
@@ -98,6 +108,10 @@ class PatientResource extends Resource
             ->columns([
         Tables\Columns\TextColumn::make('first_name')->sortable()->searchable(),
         Tables\Columns\TextColumn::make('last_name')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('full_name')
+                    ->label('Full Name')
+                    ->searchable()
+                    ->getStateUsing(fn ($record) => $record->first_name . ' ' . $record->last_name),
         Tables\Columns\TextColumn::make('phone_number')->searchable(),
         Tables\Columns\TextColumn::make('age')->sortable(),
         Tables\Columns\TextColumn::make('sex'),
@@ -131,7 +145,9 @@ class PatientResource extends Resource
 
     public static function getRelations(): array
     {
-        return [];
+        return [
+            DocumentationsRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

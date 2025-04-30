@@ -52,14 +52,22 @@ class DocumentationResource extends Resource
             ->schema([
                 Forms\Components\Select::make('patient_id')
                     ->label('Patient')
-                    ->relationship('patient', 'name')
+                    ->relationship('patient', 'first_name')
                     ->searchable()
-                    ->required(),
+                    ->required()
+                    ->reactive() // important!
+                    ->afterStateUpdated(function (callable $set, $state) {
+                        if ($state) {
+                            $patient = \App\Models\Patient::find($state);
+                            $set('unit_id', $patient?->unit_id); // Automatically set unit_id
+                        }
+                    }),
 
                 Forms\Components\Select::make('unit_id')
                     ->label('Unit')
                     ->relationship('unit', 'name')
                     ->searchable()
+                    ->disabled()
                     ->required(),
 
                 Forms\Components\Select::make('type')
@@ -83,7 +91,7 @@ class DocumentationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('patient.name')
+                Tables\Columns\TextColumn::make('patient.first_name')
                     ->label('Patient'),
                 Tables\Columns\TextColumn::make('unit.name')
                     ->label('Unit'),
